@@ -11,7 +11,8 @@ function App() {
       { name: "Angel", age: 30},
       { name: "Vargas", age: 50},
     ],
-    otherProperty: 'This is a test'
+    otherProperty: 'This is a test',
+    showPerson: false
   });
 
   const [userNames, setUserNamesState] = useState({
@@ -45,6 +46,13 @@ function App() {
     });
   }
 
+  const togglePersonHandler = () => {
+    setPersonsState({
+      persons: personsState.persons,
+      showPerson: !personsState.showPerson,
+    });
+  }
+
   const onChangeInputUserHandler = event => {
     setUserNamesState({
       userNames: [
@@ -64,13 +72,11 @@ function App() {
     cursor: 'pointer'
   }
 
-  return (
-    <div className="App">
-      <h1>Hola esto es React!, Soy Miguel</h1>
-      <button 
-        style={style}
-        onClick={changePersonStateHandler.bind(this,'Marcos')} 
-        >Click me</button>
+  let person = null;
+
+  if(personsState.showPerson){
+    person = (
+    <div>
       <Person name={personsState.persons[0].name} age={personsState.persons[0].age} />
       <Person 
         name={personsState.persons[1].name} 
@@ -79,6 +85,18 @@ function App() {
         change={onChangeInputHandler}
         >I like the dogs</Person>
       <Person name={personsState.persons[2].name} age={personsState.persons[2].age}  />
+    </div>
+    );
+  }
+
+  return (
+    <div className="App">
+      <h1>Hola esto es React!, Soy Miguel</h1>
+      <button 
+        style={style}
+        onClick={togglePersonHandler} 
+        >Click me</button>
+      { person }
       <UserInput change={onChangeInputUserHandler} 
         userName={userNames.userNames[3].userName} />
       <UserOutput userName={userNames.userNames[0].userName} />
