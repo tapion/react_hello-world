@@ -1,14 +1,17 @@
-import './App.css';
+import styleClass from  './App.module.css';
 import React, { useState} from 'react';
-import Person from './Person/Person';
-import UserInput from './UserInput/UserInput';
-import UserOutput from './UserOutput/UserOutput';
-import styled from 'styled-components';
+import Persons from '../components/Persons/Persons';
+import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary';
+import Crockpit from '../components/Cockpit/Cockpit';
+import UserInput from '../components/UserInput/UserInput';
+import UserOutput from '../components/UserOutput/UserOutput';
+// import styled from 'styled-components';
 // import Radium, {StyleRoot} from 'radium';
 // import Validation from './Validation/Validation';
 // import Char from './Char/Char';
 
 function App() {
+
   const [personsState, setPersonsState] = useState({
     persons: [
       { id: 'asdaq', name: "Miguel", age: 20},
@@ -18,17 +21,18 @@ function App() {
       { id: 'dfg', name: "Venegas", age: 50},
     ],
     otherProperty: 'This is a test',
-    showPerson: false
+    showPerson: false,
+    showCockpit: true,
   });
 
-  const [userNames, setUserNamesState] = useState({
-    userNames: [
-      { userName: 'Dora'},
-      { userName: 'Ismael'},
-      { userName: 'Margoth'},
-      { userName: 'Julio'},
-    ]
-  })
+  // const [userNames, setUserNamesState] = useState({
+  //   userNames: [
+  //     { userName: 'Dora'},
+  //     { userName: 'Ismael'},
+  //     { userName: 'Margoth'},
+  //     { userName: 'Julio'},
+  //   ]
+  // })
 
   const changePersonStateHandler = (personId, event) => {
     const persons = [...personsState.persons];
@@ -37,22 +41,23 @@ function App() {
     setPersonsState({
       persons,
       otherProperty: personsState.otherProperty,
-      showPerson: personsState.showPerson
+      showPerson: personsState.showPerson,
+      showCockpit: personsState.showCockpit,
     });
   }
 
-  const ButtonStyled = styled.button`
-    background-color: ${props => props.alt ? 'red': 'green'};
-    color: white;
-    font: inherit;
-    border: 1px solid blue;
-    padding: 8px;
-    cursor: pointer;
+  // const ButtonStyled = styled.button`
+  //   background-color: ${props => props.alt ? 'red': 'green'};
+  //   color: white;
+  //   font: inherit;
+  //   border: 1px solid blue;
+  //   padding: 8px;
+  //   cursor: pointer;
     
-    &:hover {
-      background-color: ${props => props.alt ? 'salmon': 'lightgreen'};
-    }
-  `;
+  //   &:hover {
+  //     background-color: ${props => props.alt ? 'salmon': 'lightgreen'};
+  //   }
+  // `;
 
   // let styles = {
   //   backgroundColor: 'green',
@@ -72,7 +77,8 @@ function App() {
      setPersonsState({
       persons: persons,
       otherProperty: personsState.otherProperty,
-      showPerson: personsState.showPerson
+      showPerson: personsState.showPerson,
+      showCockpit: personsState.showCockpit,
     });
   }
 
@@ -80,7 +86,8 @@ function App() {
     setPersonsState({
       persons: personsState.persons,
       showPerson: !personsState.showPerson,
-    });
+      showCockpit: personsState.showCockpit,
+    });    
     // Esto no se puede hacer en function components, se debe usar una libreria
     // styles.backgroundColor = 'red';
     // styles[':hover']={
@@ -88,43 +95,29 @@ function App() {
     // }
   }
 
-  const onChangeInputUserHandler = event => {
-    setUserNamesState({
-      userNames: [
-        { userName: 'Diana'},
-        { userName: 'Ismael'},
-        { userName: 'Margoth'},
-        { userName: event.target.value},
-      ]
-    })
-  }
+  // const onChangeInputUserHandler = event => {
+  //   setUserNamesState({
+  //     userNames: [
+  //       { userName: 'Diana'},
+  //       { userName: 'Ismael'},
+  //       { userName: 'Margoth'},
+  //       { userName: event.target.value},
+  //     ]
+  //   })
+  // }
 
   let person = null;
-
-  const styleName = []
-
-  if(personsState.persons.length < 3){
-    styleName.push('red')
-  }
-
-  if(personsState.persons.length < 2){
-    styleName.push('bold')
-  }
 
   if(personsState.showPerson){
     person = (
     <div>
       { 
-        personsState.persons.map((person, index) => {
-          return (
-            <Person 
-              click={deletePersonHandler.bind(undefined,index)}
-              name={person.name} 
-              age={person.age}
-              change={changePersonStateHandler.bind(undefined,person.id)}
-              key={person.id} />
-          )
-        })
+        // <ErrorBoundary>
+          <Persons
+            persons={personsState.persons}
+            deletePersonHandler={deletePersonHandler}
+            changePersonStateHandler={changePersonStateHandler} />
+        // </ErrorBoundary>
       }
       {/* <Person name={personsState.persons[0].name} age={personsState.persons[0].age} />
       <Person 
@@ -136,20 +129,36 @@ function App() {
       <Person name={personsState.persons[2].name} age={personsState.persons[2].age}  /> */}
     </div>
     );
+    
   }
+
+
  
   return (
-      <div className="App">
-        <h1>Hola esto es React!, Soy Miguel</h1>
-        <ButtonStyled alt={personsState.showPerson} onClick={togglePersonHandler} >Click Me</ButtonStyled>
+      <div className={styleClass.App}>
+        {/* <button onClick={togglePersonHandler} >Click Me</button> */}
+        <button onClick={() => {
+          setPersonsState({
+            persons: personsState.persons,
+            otherProperty: personsState.otherProperty,
+            showPerson: personsState.showPerson,
+            showCockpit: !personsState.showCockpit
+          }
+        )}} >Esconder</button>
+        { personsState.showCockpit ?
+          <Crockpit 
+          personLenght={6} 
+          togglePersonHandler={togglePersonHandler}
+          showPerson={false}
+          /> : null
+        }
         { person }
-        <p className={styleName.join(' ')}>It's working</p>
-        <UserInput change={onChangeInputUserHandler} 
+        {/* <UserInput change={onChangeInputUserHandler} 
           userName={userNames.userNames[3].userName} />
         <UserOutput userName={userNames.userNames[0].userName} />
         <UserOutput userName={userNames.userNames[1].userName} />
         <UserOutput userName={userNames.userNames[2].userName} />
-        <UserOutput userName={userNames.userNames[3].userName} />
+        <UserOutput userName={userNames.userNames[3].userName} /> */}
       </div>
   );
   // const onChangeInputHandler = event => {
