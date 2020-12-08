@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import styleClass from './Person.module.css';
-// import styled from 'styled-components';
+import Aux from '../../../hoc/Auxiliar';
+import withClass from '../../../hoc/withClass';
+import PropTypes from 'prop-types';
+import AuthContext from '../../../context/auth-context';
 
 // const StyleDiv = styled.div`
 //     width: 60%;
@@ -18,11 +21,14 @@ import styleClass from './Person.module.css';
 class Person extends Component{
     constructor(props){
         super(props);
+        this.inputElement = React.createRef();
         console.log('Person.js - Constructor');
         this.state = {
             toca: "tener un estado"
         }
     }
+
+    static contextType = AuthContext;
 
     static getDerivedStateFromProps(props,state){
         console.log('Person.js - getDerivedStateFromProps');
@@ -41,13 +47,23 @@ class Person extends Component{
     render(){
         console.log('Person.js - render');
         return (
-            // <StyleDiv>
-            <div className={styleClass.Person}>
-                <p onClick={this.props.click}>Hello from Person's commponent, I'm {this.props.name}, and I'm {this.props.age} years old</p>
-                <p><input type="text" onChange={this.props.change} value={this.props.name} /> </p>
-                <p>{this.props.children}</p>            
-            </div>
-            // </StyleDiv>
+            <Aux>
+                {/* <div className={styleClass.Person}> */}
+                    <p onClick={this.props.click}>Hello from Person's commponent, I'm {this.props.name}, and I'm {this.props.age} years old</p>
+                    <p>
+                        <input 
+                            type="text" 
+                            // ref={(inputElement) => { this.inputElement = inputElement}}
+                            ref={this.inputElement}
+                            onChange={this.props.change} 
+                            value={this.props.name} /> 
+                        </p>
+                    <p>{this.props.children}</p>                      
+                    {this.context.authenticated ? <p>Autenticado!!!</p> : <p>Por favor autentiquece</p>}
+                       
+                {/* </div> */}
+            </Aux>
+            
             )
     }
 
@@ -61,8 +77,16 @@ class Person extends Component{
     }
 
     componentDidMount(){
-        console.log('Person.js - componentDidMount');
+        this.inputElement.current.focus();
+        console.log(this.context.authenticated)
     }
 }
 
-export default Person;
+Person.propTypes = {
+    children: PropTypes.func,
+    name: PropTypes.string,
+    age: PropTypes.number,
+    change: PropTypes.func,
+}
+
+export default withClass(Person,styleClass.Person);
